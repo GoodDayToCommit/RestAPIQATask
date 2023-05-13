@@ -1,0 +1,21 @@
+{
+  "title": "Winning restaurants schema",
+  "type": "array",
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "date": {"type": "string"},
+        "restaurant": {
+          "type": "object",
+          "properties": {
+            "id": {"type": "integer", "minimum":  0},
+            "name": {"type": "string"}
+          },
+          "required": ["id", "name"]
+        }
+      },
+      "required": ["date", "restaurant"]
+    }
+  ]
+}
