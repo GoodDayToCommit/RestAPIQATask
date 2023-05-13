@@ -1,0 +1,36 @@
+{
+  "title": "Response for vote",
+  "type": "object",
+  "properties": {
+    "top": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "integer"},
+        "name": {"type": "string"},
+        "score": {"type": "integer"},
+        "voters": {"type": "integer"}
+      },
+      "required": ["id", "name", "score", "voters"]
+    },
+    "rankings": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {"type": "integer"},
+            "name": {"type": "string"},
+            "score": {"type": "integer"},
+            "voters": {"type": "integer"}
+          },
+          "required": ["id", "name", "score", "voters"
+          ]
+        }
+      ]
+    },
+    "available_votes": {"type": "integer"},
+    "error": {"type": "null"}
+  },
+  "required": ["top", "rankings", "available_votes", "error"
+  ]
+}
