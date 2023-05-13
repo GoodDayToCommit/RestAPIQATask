@@ -1,13 +1,13 @@
 {
-  "title": "Response for vote",
+  "title": "Status of the today's poll schema",
   "type": "object",
   "properties": {
     "top": {
       "type": "object",
       "properties": {
-        "id": {"type": "integer"},
+        "id": {"type": "integer", "minimum": 0},
         "name": {"type": "string"},
-        "score": {"type": "integer"},
+        "score": {"type": "integer", "minimum": 0},
         "voters": {"type": "integer"}
       },
       "required": ["id", "name", "score", "voters"]
@@ -18,19 +18,16 @@
         {
           "type": "object",
           "properties": {
-            "id": {"type": "integer"},
+            "id": {"type": "integer","minimum": 0},
             "name": {"type": "string"},
-            "score": {"type": "integer"},
+            "score": {"type": "integer", "minimum": 0},
             "voters": {"type": "integer"}
           },
-          "required": ["id", "name", "score", "voters"
-          ]
+          "required": ["id", "name", "score", "voters"]
         }
       ]
     },
-    "available_votes": {"type": "integer"},
-    "error": {"type": "null"}
+    "available_votes": {"type": "integer", "minimum": 0}
   },
-  "required": ["top", "rankings", "available_votes", "error"
-  ]
+  "required": ["top", "rankings", "available_votes"]
 }
