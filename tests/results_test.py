@@ -1,0 +1,19 @@
+import json
+import requests as re
+from conftest import BaseClass
+from support.mapping import *
+from support.assertions import assert_valid_schema
+
+
+class TestResults(BaseClass):
+    def test_get_winners_history(self): ...
+
+    def test_get_winners_from_future(self): ...
+
+    def test_get_winners_from_past(self): ...
+
+    def test_reset_current_data(self): ...
+
+    def test_reset_data_from_future(self): ...
+
+    def test_reset_data_from_past(self): ...
