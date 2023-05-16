@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Response for vote schema",
   "type": "object",
   "properties": {

@@ -1,10 +1,12 @@
 import json
+import logging
 from os.path import join, dirname
 from jsonschema import validate
 
 
 def assert_valid_schema(data, schema_file):
     schema = _load_json_schema(schema_file)
+    logging.info("JSONSchema: verification started")
     return validate(data, schema)
 
 
