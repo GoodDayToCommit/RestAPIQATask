@@ -31,6 +31,5 @@
     "available_votes": {"type": "integer", "minimum": 0},
     "error": {"type": "null"}
   },
-  "required": ["top", "rankings", "available_votes", "error"
-  ]
+  "required": ["top", "rankings", "available_votes", "error"]
 }
