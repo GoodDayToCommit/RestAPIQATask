@@ -10,7 +10,7 @@ class TestPoll(BaseClass):
 
         # ACTION
         poll = self.get_polls(today=True)
-        assert poll.status_code == 200, f"Status code: {poll.status_code}"
+        assert poll.status_code == 200, f"GET: status code: {poll.status_code}"
 
         json_data = json.loads(poll.content)
         assert_valid_schema(json_data, "poll_status.json")
@@ -41,39 +41,34 @@ class TestPoll(BaseClass):
 
         # ACTION
         vote = self.vote_for(rest_id)
-        print(vote.json())
         assert vote.json()["top"]["id"] == rest_id, \
             f"VOTE: restaurant did not get into the top"
         assert vote.json()["top"]["score"] == 4, \
             f"VOTE: score is not equal to 4 after first vote"
 
         vote = self.vote_for(rest_id)
-        print(vote.json())
         assert vote.json()["top"]["id"] == rest_id, \
             f"VOTE: restaurant did not get into the top"
         assert vote.json()["top"]["score"] == 6, \
-            f"VOTE: score is not equal to 4 after first vote"
+            f"VOTE: score is not equal to 6 after first vote"
 
         vote = self.vote_for(rest_id)
-        print(vote.json())
         assert vote.json()["top"]["id"] == rest_id, \
             f"VOTE: restaurant did not get into the top"
         assert vote.json()["top"]["score"] == 7, \
-            f"VOTE: score is not equal to 4 after first vote"
+            f"VOTE: score is not equal to 7 after first vote"
 
         vote = self.vote_for(rest_id)
-        print(vote.json())
         assert vote.json()["top"]["id"] == rest_id, \
             f"VOTE: restaurant did not get into the top"
         assert vote.json()["top"]["score"] == 8, \
-            f"VOTE: score is not equal to 4 after first vote"
+            f"VOTE: score is not equal to 8 after first vote"
 
         vote = self.vote_for(rest_id)
-        print(vote.json())
         assert vote.json()["top"]["id"] == rest_id, \
             f"VOTE: restaurant did not get into the top"
         assert vote.json()["top"]["score"] == 9, \
-            f"VOTE: score is not equal to 4 after first vote"
+            f"VOTE: score is not equal to 9 after first vote"
 
         # POSTCONDITIONS
         self.reset_poll(today=True)
@@ -123,8 +118,8 @@ class TestPoll(BaseClass):
         self.vote_for(rest_id_5)
         vote = self.vote_for(rest_id_6)
 
-        assert vote.status_code == 400, f"Status code: {vote.status_code}"
-        assert vote.json() == {'error': 'Votes per day exceeded'}, f"No error for 6th vote"
+        assert vote.status_code == 400, f"POST: status code: {vote.status_code}"
+        assert vote.json() == {'error': 'Votes per day exceeded'}, f"VOTE: no errors for 6th vote"
 
         # POSTCONDITIONS
         self.reset_poll(today=True)
@@ -203,4 +198,4 @@ class TestPoll(BaseClass):
         vote = self.vote_for(rest_id)
 
         assert vote.status_code == 404, \
-            f"DELETE: actual status code {vote.status_code}"
+            f"VOTE: actual status code {vote.status_code}"

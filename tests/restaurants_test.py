@@ -14,7 +14,7 @@ class TestRestaurants(BaseClass):
         # ACTION
         restaurants = self.get_restaurants()
         assert restaurants.status_code == 200, \
-            f"GET: actual status code {restaurants.status_code}"
+            f"GET: status code {restaurants.status_code}"
 
         json_data = json.loads(restaurants.content)
         assert_valid_schema(json_data, "all_restaurants.json")
@@ -30,7 +30,7 @@ class TestRestaurants(BaseClass):
         # ACTION
         restaurants = self.get_restaurants()
         assert restaurants.status_code == 200, \
-            f"GET: actual status code {restaurants.status_code}"
+            f"GET: status code {restaurants.status_code}"
 
         json_data = json.loads(restaurants.content)
         assert_valid_schema(json_data, "all_restaurants.json")
@@ -45,7 +45,7 @@ class TestRestaurants(BaseClass):
         id_created = create.json()["id"]
 
         assert create.status_code == 201, \
-            f"POST: actual status code {create.status_code}"
+            f"POST: status code {create.status_code}"
         restaurants = self.get_restaurants()
         assert {"id": id_created, "name": name} in restaurants.json()
 
@@ -61,8 +61,9 @@ class TestRestaurants(BaseClass):
         create = self.create_restaurant(name)
 
         assert create.status_code == 400, \
-            f"POST: actual status code {create.status_code}"
-        assert create.json()["name"] == ['This field may not be null.']
+            f"POST: status code {create.status_code}"
+        assert create.json()["name"] == ['This field may not be null.'], \
+            f"CREATE: no error for None named restaurant"
 
     def test_create_restaurant_with_int_name(self):
         # PRECONDITIONS
