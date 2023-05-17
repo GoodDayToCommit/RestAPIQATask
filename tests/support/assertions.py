@@ -5,12 +5,14 @@ from jsonschema import validate
 
 
 def assert_valid_schema(data, schema_file):
+    # validating responses with predefined schemas
     schema = _load_json_schema(schema_file)
     logging.info("JSONSchema: verification started")
     return validate(data, schema)
 
 
 def _load_json_schema(filename):
+    # uploading schemas
     relative_path = join('schemas', filename)
     absolute_path = join(dirname(__file__), relative_path)
 

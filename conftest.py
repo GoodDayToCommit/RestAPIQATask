@@ -1,19 +1,26 @@
-import logging
-from datetime import datetime
-from random_username.generate import generate_username
 import pytest
+import logging
 import requests as re
+from datetime import datetime
 from tests.support.mapping import *
+from random_username.generate import generate_username
 
 
 class BaseClass:
+    """
+    In this specified all needed parameters and methods needed
+    for steps in autotests
+    """
     api_url = "https://convious-qa-homework.fly.dev/api/v1/"
     username: str
     email: str
     password: str
     headers: dict
 
-    # headers = {"Authorization": "Token 1464694b555cf8c0e92e7481d3d8022a17f55a6b"}
+    @pytest.fixture
+    def logger(caplog):
+        caplog.set_level(logging.INFO)
+        return logging.getLogger()
 
     def _get_token(self) -> str:
         """
@@ -71,7 +78,6 @@ class BaseClass:
     def get_polls(self, today=False, from_date="", to_date=""):
         if today:
             logging.info("GET: today's polls")
-            print(re.get(self.api_url + POLLS_TODAY, headers=self.headers).json())
             return re.get(self.api_url + POLLS_TODAY, headers=self.headers)
         else:
             logging.info(f"GET: results of polls for {from_date} to {to_date}")
