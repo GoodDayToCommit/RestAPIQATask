@@ -28,6 +28,52 @@ class TestPoll(BaseClass):
 
         assert vote.json()["top"]["id"] == rest_id, \
             f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["score"] == 4, \
+            f"VOTE: score is not equal to 4 after first vote"
+
+        # POSTCONDITIONS
+        self.reset_poll(today=True)
+
+    def test_vote_for_one_restaurant_five_times(self):
+        # PRECONDITIONS
+        self.new_user()
+        rest_id = self.create_restaurant("Taco Bell").json()["id"]
+
+        # ACTION
+        vote = self.vote_for(rest_id)
+        print(vote.json())
+        assert vote.json()["top"]["id"] == rest_id, \
+            f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["score"] == 4, \
+            f"VOTE: score is not equal to 4 after first vote"
+
+        vote = self.vote_for(rest_id)
+        print(vote.json())
+        assert vote.json()["top"]["id"] == rest_id, \
+            f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["score"] == 6, \
+            f"VOTE: score is not equal to 4 after first vote"
+
+        vote = self.vote_for(rest_id)
+        print(vote.json())
+        assert vote.json()["top"]["id"] == rest_id, \
+            f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["score"] == 7, \
+            f"VOTE: score is not equal to 4 after first vote"
+
+        vote = self.vote_for(rest_id)
+        print(vote.json())
+        assert vote.json()["top"]["id"] == rest_id, \
+            f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["score"] == 8, \
+            f"VOTE: score is not equal to 4 after first vote"
+
+        vote = self.vote_for(rest_id)
+        print(vote.json())
+        assert vote.json()["top"]["id"] == rest_id, \
+            f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["score"] == 9, \
+            f"VOTE: score is not equal to 4 after first vote"
 
         # POSTCONDITIONS
         self.reset_poll(today=True)
