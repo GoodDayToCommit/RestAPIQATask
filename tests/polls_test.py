@@ -1,12 +1,13 @@
 import json
-import requests as re
 from conftest import BaseClass
-from support.mapping import *
 from support.assertions import assert_valid_schema
 
 
 class TestPoll(BaseClass):
     def test_get_poll_status(self):
+        # PRECONDITIONS
+        self.new_user()
+
         # ACTION
         poll = self.get_polls(today=True)
         assert poll.status_code == 200, f"Status code: {poll.status_code}"
@@ -16,6 +17,7 @@ class TestPoll(BaseClass):
 
     def test_vote_for_restaurant(self):
         # PRECONDITIONS
+        self.new_user()
         rest_id = self.create_restaurant("Taco Bell").json()["id"]
 
         # ACTION
@@ -32,6 +34,7 @@ class TestPoll(BaseClass):
 
     def test_vote_for_five_restaurants_same_user(self):
         # PRECONDITIONS
+        self.new_user()
         rest_id_1 = self.create_restaurant("Subway").json()["id"]
         rest_id_2 = self.create_restaurant("Burger King").json()["id"]
         rest_id_3 = self.create_restaurant("MacDonald's").json()["id"]
@@ -58,6 +61,7 @@ class TestPoll(BaseClass):
 
     def test_vote_for_sixth_restaurant(self):
         # PRECONDITIONS
+        self.new_user()
         rest_id_1 = self.create_restaurant("Subway").json()["id"]
         rest_id_2 = self.create_restaurant("Burger King").json()["id"]
         rest_id_3 = self.create_restaurant("MacDonald's").json()["id"]
@@ -81,6 +85,7 @@ class TestPoll(BaseClass):
 
     def test_get_poll_same_score_diff_voters(self):
         # PRECONDITIONS
+        self.new_user()  # user#1
         self.reset_poll(today=True)
 
         rest_id_1 = self.create_restaurant("KFC").json()["id"]  # new rest to decrease vote amount for user#1
@@ -93,11 +98,11 @@ class TestPoll(BaseClass):
         self.vote_for(rest_id_1)  # user#1 assigned 4 points to rest#1
         self.vote_for(rest_id_4)  # user#1 assigned 2 points to rest#4
 
-        self.new_user(username="UserTwo", email="UserTwo@gmail.com", password="PasswordTwo")  # creating user #2
+        self.new_user()  # user#2
         self.vote_for(rest_id_2)  # user#2 assigned 4 points to rest#2
         self.vote_for(rest_id_4)  # user#2 assigned 2 points to rest#4
 
-        self.new_user(username="UserThree", email="UserThree@gmail.com", password="PasswordThree")  # creating user #3
+        self.new_user()  # user#3
         vote = self.vote_for(rest_id_3)  # user#2 assigned 4 points to rest#3
 
         # total score: Starbucks - 4 points (1 voter), Coffee Nero (winner) - 4 points (2 voters)
@@ -109,6 +114,7 @@ class TestPoll(BaseClass):
 
     def test_get_poll_same_score_and_voters(self):
         # PRECONDITIONS
+        self.new_user()
         self.reset_poll(today=True)
         rest_id_1 = self.create_restaurant("MacDonald's").json()["id"]
         rest_id_2 = self.create_restaurant("Subway").json()["id"]
@@ -116,7 +122,7 @@ class TestPoll(BaseClass):
         # ACTION
         self.vote_for(rest_id_1)  # user#1 assigned 4 points to rest#1
 
-        self.new_user(username="SuperDuper", email="SuperDuper@gmail.com", password="Super1Pass123")  # user#2
+        self.new_user()  # user#2
         vote = self.vote_for(rest_id_2)  # user#2 assigned 4 points to rest#2
 
         assert vote.json()["top"] == {'id': rest_id_1, 'score': 4, 'voters': 1, 'name': "MacDonald's"}, \
@@ -125,20 +131,30 @@ class TestPoll(BaseClass):
         # POSTCONDITIONS
         self.reset_poll(today=True)
 
-    def test_get_poll_one_participant(self):
+    def test_get_poll_after_change_name(self):
         # PRECONDITIONS
-        self.reset_poll(today=True)
+        self.new_user()
+        new_name = "KFC"
+        rest_id = self.create_restaurant("Taco Bell").json()["id"]
 
         # ACTION
-        poll = self.get_polls(today=True)
-        assert poll.status_code == 200, f"Status code: {poll.status_code}"
-        print(poll.json())
+        self.change_restaurant(rest_id=rest_id, new_name=new_name)
+        vote = self.vote_for(rest_id)
+        assert vote.json()["top"]["id"] == rest_id, \
+            f"VOTE: restaurant did not get into the top"
+        assert vote.json()["top"]["name"] == new_name
 
-        json_data = json.loads(poll.content)
-        assert_valid_schema(json_data, "poll_status.json")
+        # POSTCONDITIONS
+        self.reset_poll(today=True)
+        self.delete(all_rests=True)
 
-    def test_get_poll_no_participants(self): ...
+    def test_vote_for_not_existed_restaurant(self):
+        # PRECONDITIONS
+        self.new_user()
+        rest_id = 1231312
 
-    def test_get_poll_after_change_name(self): ...
+        # ACTION
+        vote = self.vote_for(rest_id)
 
-    def test_vote_for_not_existed_restaurant(self): ...
+        assert vote.status_code == 404, \
+            f"DELETE: actual status code {vote.status_code}"

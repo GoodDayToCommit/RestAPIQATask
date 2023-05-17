@@ -6,6 +6,7 @@ from support.assertions import assert_valid_schema
 class TestRestaurants(BaseClass):
     def test_get_list_of_restaurants(self):
         # PRECONDITIONS
+        self.new_user()
         self.create_restaurant("MacDonald's")
         self.create_restaurant("PizzaHut")
         self.create_restaurant("KFC")
@@ -23,6 +24,7 @@ class TestRestaurants(BaseClass):
 
     def test_get_empty_list_of_restaurants(self):
         # PRECONDITION
+        self.new_user()
         self.delete(all_rests=True)
 
         # ACTION
@@ -35,6 +37,7 @@ class TestRestaurants(BaseClass):
 
     def test_create_restaurant(self):
         # PRECONDITIONS
+        self.new_user()
         name = "Burger King"
 
         # ACTION
@@ -51,6 +54,7 @@ class TestRestaurants(BaseClass):
 
     def test_create_restaurant_with_null_name(self):
         # PRECONDITIONS
+        self.new_user()
         name = None
 
         # ACTION
@@ -62,6 +66,7 @@ class TestRestaurants(BaseClass):
 
     def test_create_restaurant_with_int_name(self):
         # PRECONDITIONS
+        self.new_user()
         name = 12345
 
         # ACTION
@@ -77,8 +82,9 @@ class TestRestaurants(BaseClass):
         # POSTCONDITIONS
         self.delete(all_rests=True)
 
-    def test_change_exist_restaurant(self):
+    def test_change_restaurant_name(self):
         # PRECONDITIONS
+        self.new_user()
         name = "Old boring name"
         new_name = "New cool name"
         create = self.create_restaurant(name)
@@ -98,6 +104,7 @@ class TestRestaurants(BaseClass):
 
     def test_change_not_existed_restaurant(self):
         # PRECONDITIONS
+        self.new_user()
         new_id = 123456677
 
         # ACTION
@@ -108,6 +115,7 @@ class TestRestaurants(BaseClass):
 
     def test_delete_restaurant(self):
         # PRECONDITIONS
+        self.new_user()
         name = "Burger King"
         id_created = self.create_restaurant(name).json()["id"]
 
@@ -121,6 +129,7 @@ class TestRestaurants(BaseClass):
 
     def test_delete_not_existed_restaurant(self):
         # PRECONDITIONS
+        self.new_user()
         new_id = 12312312
 
         # ACTION

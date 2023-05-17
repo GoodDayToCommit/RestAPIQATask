@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-
+from random_username.generate import generate_username
 import pytest
 import requests as re
 from tests.support.mapping import *
@@ -8,35 +8,39 @@ from tests.support.mapping import *
 
 class BaseClass:
     api_url = "https://convious-qa-homework.fly.dev/api/v1/"
-    username = "AzamatImaevTheBestQAWorker"
-    email = "azamat.imaev.work@gmail.com"
-    password = "SuperSecretPassword"
-    headers = {"Authorization": "Token 1464694b555cf8c0e92e7481d3d8022a17f55a6b"}
+    username: str
+    email: str
+    password: str
+    headers: dict
 
-    def _get_token(self, username, email, password) -> str:
+    # headers = {"Authorization": "Token 1464694b555cf8c0e92e7481d3d8022a17f55a6b"}
+
+    def _get_token(self) -> str:
         """
         Create an authorization token for new user / if previous expired
         :return: token:str
         """
         headers = {"Content-Type": "application/json"}
         re.post(url=self.api_url + CREATE_USER,
-                headers=headers, json={"username": username,
-                                       "email": email,
-                                       "password": password})
+                headers=headers, json={"username": self.username,
+                                       "email": self.email,
+                                       "password": self.password})
         get_token = re.post(url=self.api_url + GET_TOKEN,
-                            headers=headers, json={"username": username,
-                                                   "password": password})
+                            headers=headers, json={"username": self.username,
+                                                   "password": self.password})
         token = get_token.json()["auth_token"]
         logging.info(f"POST: token was created - {token}")
         return token
 
-    def new_user(self, username, email, password):
-        """
-        Creates new user with new token
-        """
-        token = self._get_token(username=username, email=email, password=password)
+    def new_user(self):
+        """ Creates new user using generator with a new token """
+        self.username = generate_username(1)[0]
+        self.email = (self.username + "@gmail.com")
+        self.password = generate_username(1)[0]  # To avoid error "password is too similar to the username"
+        token = self._get_token()
         self.headers = {"Authorization": f"Token {token}"}
-        return self.headers
+        logging.info("New user created")
+        return self.headers, self.username, self.email, self.password
 
     def get_restaurants(self):
         logging.info("GET: all restaurants")
@@ -67,6 +71,7 @@ class BaseClass:
     def get_polls(self, today=False, from_date="", to_date=""):
         if today:
             logging.info("GET: today's polls")
+            print(re.get(self.api_url + POLLS_TODAY, headers=self.headers).json())
             return re.get(self.api_url + POLLS_TODAY, headers=self.headers)
         else:
             logging.info(f"GET: results of polls for {from_date} to {to_date}")
