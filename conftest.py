@@ -11,7 +11,7 @@ class BaseClass:
     In this specified all needed parameters and methods needed
     for steps in autotests
     """
-    api_url = "https://convious-qa-homework.fly.dev/api/v1/"
+    api_url = ""
     username: str
     email: str
     password: str

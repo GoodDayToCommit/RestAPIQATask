@@ -1,5 +1,5 @@
-# ConviousQATask
-Repository for demonstrating the execution of a test task in the company Convious
+# Test Assignment for QA
+Repository for demonstrating the execution of a test task in the company N
 
 ### Preparing to launch autotests
 1. Install requirements
