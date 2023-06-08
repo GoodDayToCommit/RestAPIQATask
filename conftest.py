@@ -1,8 +1,9 @@
-import pytest
+import allure
 import logging
 import requests as re
 from datetime import datetime
-from tests.support.mapping import *
+from src.support.logger import log
+from src.support.mapping import *
 from random_username.generate import generate_username
 
 
@@ -15,26 +16,51 @@ class BaseClass:
     username: str
     email: str
     password: str
-    headers: dict
+    _headers = {"Content-Type": "application/json"}
+    _timeout = 10
+    response = None
 
-    @pytest.fixture
-    def logger(caplog):
-        caplog.set_level(logging.INFO)
-        return logging.getLogger()
+    def get(self):
+        ...
+
+    @allure.step("Sending POST request")
+    def post(self, url: str, endpoint: str, json_body: dict = None):
+        with allure.step(f"POST request for: {url}{endpoint} with body: \n {json_body}"):
+            self.response = re.post(url=f"{url}{endpoint}",
+                                    headers=self._headers,
+                                    json=json_body,
+                                    timeout=self._timeout)
+        log(response=self.response, request_body=json_body)
+
+        return self
+
+    @allure.step("Sending PUT request")
+    def put(self):
+        ...
+
+    @allure.step("Sending DELETE request")
+    def delete(self):
+        ...
+
+    @allure.step("Status code is {expected_code}")
+    def check_status_code(self, expected_code: int):
+        actual_code = self.response.status_code
+        assert expected_code == actual_code, f"ER: {expected_code}, AR: {actual_code}"
+
+        return self
 
     def _get_token(self) -> str:
         """
         Create an authorization token for new user / if previous expired
         :return: token:str
         """
-        headers = {"Content-Type": "application/json"}
         re.post(url=self.api_url + CREATE_USER,
-                headers=headers, json={"username": self.username,
-                                       "email": self.email,
-                                       "password": self.password})
+                headers=self._headers, json={"username": self.username,
+                                             "email": self.email,
+                                             "password": self.password})
         get_token = re.post(url=self.api_url + GET_TOKEN,
-                            headers=headers, json={"username": self.username,
-                                                   "password": self.password})
+                            headers=self._headers, json={"username": self.username,
+                                                         "password": self.password})
         token = get_token.json()["auth_token"]
         logging.info(f"POST: token was created - {token}")
         return token
@@ -45,27 +71,27 @@ class BaseClass:
         self.email = (self.username + "@gmail.com")
         self.password = generate_username(1)[0]  # To avoid error "password is too similar to the username"
         token = self._get_token()
-        self.headers = {"Authorization": f"Token {token}"}
+        self._headers = {"Authorization": f"Token {token}"}
         logging.info("New user created")
-        return self.headers, self.username, self.email, self.password
+        return self._headers, self.username, self.email, self.password
 
     def get_restaurants(self):
         logging.info("GET: all restaurants")
-        return re.get(self.api_url + RESTAURANTS, headers=self.headers)
+        return re.get(self.api_url + RESTAURANTS, headers=self._headers)
 
     def create_restaurant(self, name):
         logging.info(f"POST: creating restaurant with name {name}")
         return re.post(self.api_url + RESTAURANTS,
-                       headers=self.headers, json={"name": name})
+                       headers=self._headers, json={"name": name})
 
     def change_restaurant(self, rest_id, new_name):
         logging.info(f"POST: changing restaurant with {rest_id} -> {new_name}")
         return re.put(self.api_url + RESTAURANTS + f"{rest_id}/",
-                      headers=self.headers, json={"name": new_name})
+                      headers=self._headers, json={"name": new_name})
 
     def delete(self, rest_id=0, all_rests=False):
         if all_rests:
-            restaurants = re.get(self.api_url + RESTAURANTS, headers=self.headers).json()
+            restaurants = re.get(self.api_url + RESTAURANTS, headers=self._headers).json()
             if len(restaurants) > 0:
                 for rest in restaurants:
                     re.delete(self.api_url + RESTAURANTS + f"{rest['id']}/", headers=self.headers)

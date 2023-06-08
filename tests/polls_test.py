@@ -1,6 +1,6 @@
 import json
 from conftest import BaseClass
-from support.assertions import assert_valid_schema
+from src.support.assertions import assert_valid_schema
 
 
 class TestPoll(BaseClass):
